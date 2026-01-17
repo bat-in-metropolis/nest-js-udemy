@@ -1,2 +1,4 @@
 ## All Users GET Request
-GET http://localhost:3000/users
+GET http://localhost:3000/users/asdf/1234
+?limit=10
+&offset=20
