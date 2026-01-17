@@ -1,0 +1,2 @@
+## User DELETE Request
+DELETE http://localhost:3000/users
