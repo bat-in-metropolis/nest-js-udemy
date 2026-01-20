@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Put,
@@ -12,14 +13,20 @@ import {
 
 @Controller("users")
 export class UsersController {
-	@Get("/:id{/:optional}")
+	@Get("{/:id}")
 	public getUsers(
-		@Param("id") id: string,
-		@Param("optional") optional?: string,
+		@Param("id", ParseIntPipe) id: number | undefined,
 		@Query("limit") limit?: number,
 		@Query("offset") offset?: number,
 	) {
-		console.log({ id, optional, limit, offset });
+		console.log({
+			id,
+			limit,
+			offset,
+			typeOfID: typeof id,
+			typeOfLimit: typeof limit,
+			typeOfOffset: typeof offset,
+		});
 		return "You sent a get request to /users endpoint";
 	}
 
