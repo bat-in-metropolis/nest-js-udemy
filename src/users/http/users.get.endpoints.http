@@ -1,4 +1,4 @@
 ## All Users GET Request
 GET http://localhost:3000/users/1234
-?limit=10
-&offset=20
+# ?limit=10
+# &page=20

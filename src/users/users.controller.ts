@@ -1,6 +1,7 @@
 import {
 	Body,
 	Controller,
+	DefaultValuePipe,
 	Delete,
 	Get,
 	Param,
@@ -16,16 +17,16 @@ export class UsersController {
 	@Get("{/:id}")
 	public getUsers(
 		@Param("id", ParseIntPipe) id: number | undefined,
-		@Query("limit") limit?: number,
-		@Query("offset") offset?: number,
+		@Query("limit", new DefaultValuePipe(10), ParseIntPipe) limit: number,
+		@Query("page", new DefaultValuePipe(1), ParseIntPipe) page: number,
 	) {
 		console.log({
 			id,
 			limit,
-			offset,
+			page,
 			typeOfID: typeof id,
 			typeOfLimit: typeof limit,
-			typeOfOffset: typeof offset,
+			typeOfPage: typeof page,
 		});
 		return "You sent a get request to /users endpoint";
 	}
