@@ -16,7 +16,6 @@
 		"test:cov": "jest --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
 		"test:e2e": "jest --config ./test/jest-e2e.json",
-
 		"format": "biome format src --write",
 		"format:check": "biome format src",
 		"lint": "biome lint src",
@@ -25,6 +24,7 @@
 	"dependencies": {
 		"@nestjs/common": "^11.0.1",
 		"@nestjs/core": "^11.0.1",
+		"@nestjs/mapped-types": "2.0.5",
 		"@nestjs/platform-express": "^11.0.1",
 		"class-transformer": "^0.5.1",
 		"class-validator": "0.14.1",
