@@ -42,8 +42,12 @@ export class UsersController {
 	) {
 		console.log("createUser:", {
 			request: createUserDto,
+			typeOfRequest: typeof createUserDto,
 			headers,
+			typeOfHeaders: typeof headers,
 			ip,
+			typeOfIp: typeof ip,
+			instanceofRequest: createUserDto instanceof CreateUserDto,
 		});
 
 		return "You sent a post request to /users endpoint";
