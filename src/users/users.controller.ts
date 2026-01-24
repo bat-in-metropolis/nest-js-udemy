@@ -14,10 +14,10 @@ import {
 	Query,
 } from "@nestjs/common";
 import { CreateUserDto } from "./dtos/create-user.dto";
-import { GetUsersParamsDto } from "./dtos/get-users-params.dto";
+import { GetUserByIdDto } from "./dtos/get-user-by-id.dto";
 import { PatchUserData } from "./dtos/patch-user.dtos";
 import { UsersService } from "./providers/users.service";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 @Controller("users")
 @ApiTags("Users")
@@ -27,13 +27,43 @@ export class UsersController {
 		private readonly usersService: UsersService,
 	) {}
 
-	@Get("{/:id}")
+	@Get()
+	@ApiOperation({ summary: "Get all users (paginated)" })
+	@ApiResponse({
+		status: 200,
+		description: "Users fetched successfully based on the query parameters",
+	})
+	@ApiQuery({
+		name: "limit",
+		required: false,
+		type: Number,
+		description: "The number of entries to returned per query",
+		example: 10,
+	})
+	@ApiQuery({
+		name: "page",
+		required: false,
+		type: Number,
+		description:
+			"The position of the page number that you want the API to return",
+		example: 1,
+	})
 	public getUsers(
-		@Param() getUsersParamDto: GetUsersParamsDto,
 		@Query("limit", new DefaultValuePipe(10), ParseIntPipe) limit: number,
 		@Query("page", new DefaultValuePipe(1), ParseIntPipe) page: number,
 	) {
-		return this.usersService.findAll(getUsersParamDto, limit, page);
+		return this.usersService.findAll(limit, page);
+	}
+
+	@Get(":id")
+	@ApiOperation({
+		summary: "Get user with specific id",
+	})
+	@ApiResponse({
+		status: 200,
+	})
+	public getUsersWithId(@Param() getUserByIdDto: GetUserByIdDto) {
+		return this.usersService.findOneById(getUserByIdDto.id);
 	}
 
 	@Post()

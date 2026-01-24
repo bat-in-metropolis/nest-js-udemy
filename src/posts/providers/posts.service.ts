@@ -10,7 +10,7 @@ export class PostsService {
 		private readonly usersService: UsersService,
 	) {}
 
-	findAll(userId: string) {
+	findAll(userId: number) {
 		// User Service
 		// Find a user with the provided userId
 		const user = this.usersService.findOneById(userId);
