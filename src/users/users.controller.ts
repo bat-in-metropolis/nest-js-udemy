@@ -17,8 +17,10 @@ import { CreateUserDto } from "./dtos/create-user.dto";
 import { GetUsersParamsDto } from "./dtos/get-users-params.dto";
 import { PatchUserData } from "./dtos/patch-user.dtos";
 import { UsersService } from "./providers/users.service";
+import { ApiTags } from "@nestjs/swagger";
 
 @Controller("users")
+@ApiTags("Users")
 export class UsersController {
 	constructor(
 		// Injecting the UsersService instance
