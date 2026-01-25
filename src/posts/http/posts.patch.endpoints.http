@@ -1,0 +1,9 @@
+## Update Post
+PATCH http://localhost:3000/posts
+content-type: application/json
+
+{
+    "id": 1,
+    "title": "Updated Title",
+    "postType": "post"
+}
