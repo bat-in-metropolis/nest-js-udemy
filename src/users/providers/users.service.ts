@@ -1,22 +1,28 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { AuthService } from "src/auth/providers/auth.service";
+import { Repository } from "typeorm";
+import { User } from "../user.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { CreateUserDto } from "../dtos/create-user.dto";
 
 /**
  * Class to connect to Users table and perform buisness operations
  */
 @Injectable()
 export class UsersService {
-	/**
-	 * Auth service used for authentication checks
-	 */
-	private readonly authService: AuthService;
-
 	constructor(
+		/**
+		 * Auth service used for authentication checks
+		 */
 		@Inject(forwardRef(() => AuthService))
-		authService: AuthService,
-	) {
-		this.authService = authService;
-	}
+		private readonly authService: AuthService,
+
+		/**
+		 * User repository used for database operations
+		 */
+		@InjectRepository(User)
+		private readonly userRepository: Repository<User>,
+	) {}
 
 	/**
 	 * The method to get all the users from the database
@@ -59,5 +65,33 @@ export class UsersService {
 			lastName: "Doe",
 			email: "john.doe@example.com",
 		};
+	}
+
+	/**
+	 * The method to create a new user
+	 * @param createUserDto The user data to create
+	 * @returns The created user
+	 */
+	public async createUser(createUserDto: CreateUserDto) {
+		/**
+		 * 1. Check if user already exists
+		 * 2. if yes - Handle exception
+		 * 3. if no - Create user
+		 */
+		// Check if user already exists
+		const existingUser = await this.userRepository.findOne({
+			where: {
+				email: createUserDto.email,
+			},
+		});
+
+		// if yes - Handle exception
+		if (existingUser) {
+			throw new Error("User already exists");
+		}
+
+		// if no - Create user
+		const user = this.userRepository.create(createUserDto);
+		return await this.userRepository.save(user);
 	}
 }

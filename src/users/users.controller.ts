@@ -82,7 +82,7 @@ export class UsersController {
 			instanceofRequest: createUserDto instanceof CreateUserDto,
 		});
 
-		return "You sent a post request to /users endpoint";
+		return this.usersService.createUser(createUserDto);
 	}
 
 	@Patch()
