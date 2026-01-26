@@ -6,6 +6,7 @@ import { PostsModule } from "./posts/posts.module";
 import { AuthModule } from "./auth/auth.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
+import { User } from "./users/user.entity";
 
 @Module({
 	imports: [
@@ -15,15 +16,19 @@ import { ConfigModule } from "@nestjs/config";
 		UsersModule,
 		PostsModule,
 		AuthModule,
-		TypeOrmModule.forRoot({
-			type: "postgres",
-			entities: [],
-			synchronize: true, // never push this to production, can cause data loss
-			host: process.env.DB_HOST,
-			port: Number(process.env.DB_PORT),
-			username: process.env.DB_USER,
-			password: process.env.DB_PASSWORD,
-			database: process.env.DB_NAME,
+		TypeOrmModule.forRootAsync({
+			imports: [],
+			inject: [],
+			useFactory: () => ({
+				type: "postgres",
+				entities: [User],
+				synchronize: true, // never push this to production, can cause data loss
+				host: process.env.DB_HOST,
+				port: Number(process.env.DB_PORT),
+				username: process.env.DB_USER,
+				password: process.env.DB_PASSWORD,
+				database: process.env.DB_NAME,
+			}),
 		}),
 	],
 	controllers: [AppController],
