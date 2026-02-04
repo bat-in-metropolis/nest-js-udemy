@@ -7,6 +7,8 @@ import { AuthModule } from "./auth/auth.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { User } from "./users/user.entity";
+import { TagsModule } from "./tags/tags.module";
+import { MetaOptionsModule } from "./meta-options/meta-options.module";
 
 @Module({
 	imports: [
@@ -21,7 +23,8 @@ import { User } from "./users/user.entity";
 			inject: [],
 			useFactory: () => ({
 				type: "postgres",
-				entities: [User],
+				// entities: [User],
+				autoLoadEntities: true,
 				synchronize: true, // never push this to production, can cause data loss
 				host: process.env.DB_HOST,
 				port: Number(process.env.DB_PORT),
@@ -30,6 +33,8 @@ import { User } from "./users/user.entity";
 				database: process.env.DB_NAME,
 			}),
 		}),
+		TagsModule,
+		MetaOptionsModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
