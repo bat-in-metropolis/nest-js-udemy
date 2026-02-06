@@ -1,29 +1,16 @@
 ## Create POST Request
-POST http://localhost:3000/posts
+POST http://localhost:8080/posts
 Content-Type: application/json
 
 {
     "title": "Sample Post",
     "postType": "post",
-    "slug": "sample-post",
+    "slug": "sample-post-2",
     "status": "draft",
     "content": "This is a sample post content.",
     "publishOn": "2026-01-25T09:17:41.000Z",
-    "tags": ["sample-tag", "sample-tag-2"],
-    "metaOptions": [
-        {
-            "key": "title",
-            "value": "Sample Post"
-        },
-        {
-            "key": "description",
-            "value": "This is a sample post content."
-        },
-        {
-            "key": "keywords",
-            "value": ["sample-tag", "sample-tag-2"]
-        }
-    ],
+    // "tags": ["sample-tag", "sample-tag-2"],
+    "metaOptions": {"metaValue": "{\"sidebarEnabled\": true, \"footerActive\": true}"},
     "schema": "{\r\n\"@context\": \"https://schema.org\",\r\n\"@type\": \"BlogPosting\"\r\n}"
 
 }
