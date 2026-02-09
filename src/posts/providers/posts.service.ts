@@ -47,21 +47,45 @@ export class PostsService {
    * Creating new posts
    */
   public async create(@Body() createPostDto: CreatePostDto) {
-    // Create metaOptions
-    const metaOptions = createPostDto.metaOptions
-      ? this.metaOptionRepository.create(createPostDto.metaOptions)
-      : null;
+    /**
+      // Create metaOptions
+      const metaOptions = createPostDto.metaOptions
+        ? this.metaOptionRepository.create(createPostDto.metaOptions)
+        : null;
 
-    if (metaOptions) await this.metaOptionRepository.save(metaOptions);
+      if (metaOptions) await this.metaOptionRepository.save(metaOptions);
 
-    // Create post (omit metaOptions — DTO type is incompatible with entity; we assign it below)
-    const { metaOptions: _dtoMeta, ...postData } = createPostDto;
-    const post = this.postRepository.create(postData);
+      // Create post (omit metaOptions — DTO type is incompatible with entity; we assign it below)
+      const { metaOptions: _dtoMeta, ...postData } = createPostDto;
+      const post = this.postRepository.create(postData);
 
-    // If metaOptions exists — add metaOptions to the post
-    if (metaOptions) post.metaOptions = metaOptions;
+      // If metaOptions exists — add metaOptions to the post
+      if (metaOptions) post.metaOptions = metaOptions;
 
-    // return the post
+      // return the post
+      return await this.postRepository.save(post);
+     */
+
+    /**
+     * With use of Cascade -
+     */
+
+    // Default way - 
+    // const post = this.postRepository.create(createPostDto);
+
+    // Transform DTO to match entity structure
+    // Handle null metaOptions by converting to undefined or omitting it
+
+    const { metaOptions, ...postData } = createPostDto;
+    const postDataForCreate = {
+      ...postData,
+      ...(metaOptions !== null 
+        ? { metaOptions: metaOptions as Partial<MetaOption> } 
+        : null),
+    };
+    
+    const post = this.postRepository.create(postDataForCreate);
+
     return await this.postRepository.save(post);
   }
 }
