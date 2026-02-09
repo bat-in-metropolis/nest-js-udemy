@@ -8,45 +8,45 @@ import { MetaOption } from "src/meta-options/meta-option.entity";
 
 @Injectable()
 export class PostsService {
-  constructor(
-    /**
-     * Injecting UsersService
-     */
-    private readonly usersService: UsersService,
+	constructor(
+		/**
+		 * Injecting UsersService
+		 */
+		private readonly usersService: UsersService,
 
-    /**
-     * Injecting postsRepository
-     */
-    @InjectRepository(Post)
-    private readonly postRepository: Repository<Post>,
+		/**
+		 * Injecting postsRepository
+		 */
+		@InjectRepository(Post)
+		private readonly postRepository: Repository<Post>,
 
-    /**
-     * Injecting MetaOptionRepository
-     */
-    @InjectRepository(MetaOption)
-    private readonly metaOptionRepository: Repository<MetaOption>,
-  ) {}
+		/**
+		 * Injecting MetaOptionRepository
+		 */
+		@InjectRepository(MetaOption)
+		private readonly metaOptionRepository: Repository<MetaOption>,
+	) {}
 
-  public async findAll() {
-    /**
-     * To fetch metaOptions as well from database.
-     * const posts = this.postRepository.find({
-     *    relations: {
-     *      metaOptions: true
-     *    }
-     * });
-     * Or in Post entity in metaOptions we can set "eager: true" as well.
-     */
-    const posts = this.postRepository.find();
+	public async findAll() {
+		/**
+		 * To fetch metaOptions as well from database.
+		 * const posts = this.postRepository.find({
+		 *    relations: {
+		 *      metaOptions: true
+		 *    }
+		 * });
+		 * Or in Post entity in metaOptions we can set "eager: true" as well.
+		 */
+		const posts = this.postRepository.find();
 
-    return posts;
-  }
+		return posts;
+	}
 
-  /**
-   * Creating new posts
-   */
-  public async create(@Body() createPostDto: CreatePostDto) {
-    /**
+	/**
+	 * Creating new posts
+	 */
+	public async create(@Body() createPostDto: CreatePostDto) {
+		/**
       // Create metaOptions
       const metaOptions = createPostDto.metaOptions
         ? this.metaOptionRepository.create(createPostDto.metaOptions)
@@ -65,26 +65,50 @@ export class PostsService {
       return await this.postRepository.save(post);
      */
 
-    /**
-     * With use of Cascade -
-     */
+		/**
+		 * With use of Cascade -
+		 */
 
-    // Default way -
-    // const post = this.postRepository.create(createPostDto);
+		// Default way -
+		// const post = this.postRepository.create(createPostDto);
 
-    // Transform DTO to match entity structure
-    // Handle null metaOptions by converting to undefined or omitting it
+		// Transform DTO to match entity structure
+		// Handle null metaOptions by converting to undefined or omitting it
 
-    const { metaOptions, ...postData } = createPostDto;
-    const postDataForCreate = {
-      ...postData,
-      ...(metaOptions !== null
-        ? { metaOptions: metaOptions as Partial<MetaOption> }
-        : null),
-    };
+		const { metaOptions, ...postData } = createPostDto;
+		const postDataForCreate = {
+			...postData,
+			...(metaOptions !== null
+				? { metaOptions: metaOptions as Partial<MetaOption> }
+				: null),
+		};
 
-    const post = this.postRepository.create(postDataForCreate);
+		const post = this.postRepository.create(postDataForCreate);
 
-    return await this.postRepository.save(post);
-  }
+		return await this.postRepository.save(post);
+	}
+
+	public async delete(postId: number) {
+		/**
+		 * Steps -
+		 * Find the post by ID
+		 * take out id for metaOptions if they exists.
+		 * delete post
+		 * delete metaOptions
+		 * return confirmation
+		 */
+		console.log("manas delete postId: ", postId);
+		const post = await this.postRepository.findOneBy({
+			id: postId,
+		});
+
+		const metaOptionId = post?.metaOptions?.id;
+		console.log({ metaOptionId });
+
+		if (post) await this.postRepository.delete(postId);
+
+		if (metaOptionId) await this.metaOptionRepository.delete(metaOptionId);
+
+		return { deleted: true, id: postId };
+	}
 }

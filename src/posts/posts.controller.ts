@@ -1,9 +1,11 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
 	HttpStatus,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 } from "@nestjs/common";
@@ -23,7 +25,7 @@ export class PostsController {
 	) {}
 
 	@Get()
-	public getAllPosts(){
+	public getAllPosts() {
 		return this.postsService.findAll();
 	}
 
@@ -45,7 +47,7 @@ export class PostsController {
 	})
 	@Post()
 	public createPost(@Body() createPostDto: CreatePostDto) {
-		return this.postsService.create(createPostDto)
+		return this.postsService.create(createPostDto);
 	}
 
 	@ApiOperation({
@@ -58,5 +60,10 @@ export class PostsController {
 	@Patch()
 	public updatePost(@Body() updatePostDto: PatchPostDto) {
 		return updatePostDto;
+	}
+
+	@Delete("/:postId")
+	public deletePost(@Param("postId", ParseIntPipe) postId: number) {
+		return this.postsService.delete(Number(postId));
 	}
 }

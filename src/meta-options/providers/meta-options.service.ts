@@ -6,18 +6,18 @@ import { Repository } from "typeorm";
 
 @Injectable()
 export class MetaOptionsService {
-  constructor(
-    /**
-     * Inject metaOtionsRepository
-     */
-    @InjectRepository(MetaOption)
-    private readonly metaOptionRepository: Repository<MetaOption>,
-  ) {}
-  public async create(createPostMetaOptionsDto: CreatePostMetaOptionsDto) {
-    const metaOption = this.metaOptionRepository.create(
-      createPostMetaOptionsDto,
-    );
+	constructor(
+		/**
+		 * Inject metaOtionsRepository
+		 */
+		@InjectRepository(MetaOption)
+		private readonly metaOptionRepository: Repository<MetaOption>,
+	) {}
+	public async create(createPostMetaOptionsDto: CreatePostMetaOptionsDto) {
+		const metaOption = this.metaOptionRepository.create(
+			createPostMetaOptionsDto,
+		);
 
-    return await this.metaOptionRepository.save(metaOption);
-  }
+		return await this.metaOptionRepository.save(metaOption);
+	}
 }

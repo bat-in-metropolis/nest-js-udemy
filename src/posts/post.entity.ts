@@ -1,5 +1,11 @@
 import { CreatePostMetaOptionsDto } from "src/meta-options/dtos/create-post-meta-options.dtos";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+	Column,
+	Entity,
+	JoinColumn,
+	OneToOne,
+	PrimaryGeneratedColumn,
+} from "typeorm";
 import { PostType } from "./enums/postType.enum";
 import { Status } from "./enums/postStatus.enums";
 import { MetaOption } from "src/meta-options/meta-option.entity";
@@ -66,12 +72,11 @@ export class Post {
 
 	@OneToOne(() => MetaOption, {
 		cascade: true,
-		eager: true
+		eager: true,
 	})
 	@JoinColumn()
 	metaOptions?: MetaOption;
 
 	// Will work in these later on
 	tags?: string[];
-
 }

@@ -118,11 +118,9 @@ export class CreatePostDto {
 			properties: {
 				metaValue: {
 					type: "json",
-					description:
-						"The metaValue is a JSON string",
+					description: "The metaValue is a JSON string",
 					example: '{\"sidebarEnabled\": true}',
 				},
-				
 			},
 		},
 	})
