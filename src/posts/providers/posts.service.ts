@@ -27,20 +27,19 @@ export class PostsService {
     private readonly metaOptionRepository: Repository<MetaOption>,
   ) {}
 
-  findAll(userId: number) {
-    // User Service
-    // Find a user with the provided userId
-    const user = this.usersService.findOneById(userId);
+  public async findAll() {
+    /**
+     * To fetch metaOptions as well from database.
+     * const posts = this.postRepository.find({
+     *    relations: {
+     *      metaOptions: true
+     *    }
+     * });
+     * Or in Post entity in metaOptions we can set "eager: true" as well.
+     */
+    const posts = this.postRepository.find();
 
-    return [
-      {
-        id: 1,
-        title: "Post 1",
-        content: "Content 1",
-        user,
-      },
-      { id: 2, title: "Post 2", content: "Content 2", user },
-    ];
+    return posts;
   }
 
   /**
@@ -70,7 +69,7 @@ export class PostsService {
      * With use of Cascade -
      */
 
-    // Default way - 
+    // Default way -
     // const post = this.postRepository.create(createPostDto);
 
     // Transform DTO to match entity structure
@@ -79,11 +78,11 @@ export class PostsService {
     const { metaOptions, ...postData } = createPostDto;
     const postDataForCreate = {
       ...postData,
-      ...(metaOptions !== null 
-        ? { metaOptions: metaOptions as Partial<MetaOption> } 
+      ...(metaOptions !== null
+        ? { metaOptions: metaOptions as Partial<MetaOption> }
         : null),
     };
-    
+
     const post = this.postRepository.create(postDataForCreate);
 
     return await this.postRepository.save(post);

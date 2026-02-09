@@ -2,10 +2,10 @@ import {
 	Body,
 	Controller,
 	Get,
-	Param,
-	Post,
 	HttpStatus,
+	Param,
 	Patch,
+	Post,
 } from "@nestjs/common";
 import { PostsService } from "./providers/posts.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -22,13 +22,18 @@ export class PostsController {
 		private readonly postsService: PostsService,
 	) {}
 
+	@Get()
+	public getAllPosts(){
+		return this.postsService.findAll();
+	}
+
 	/**
 	 * GET localhost:3000/posts/:userId
 	 */
 	@Get("{/:userId}")
 	public getPosts(@Param("userId") userId: number) {
 		console.log("post controller", { userId });
-		return this.postsService.findAll(userId);
+		return this.postsService.findAll();
 	}
 
 	@ApiOperation({
