@@ -96,18 +96,34 @@ export class PostsService {
 		 * delete post
 		 * delete metaOptions
 		 * return confirmation
+		 *
+		 * ---------------------------------------------
+		 * console.log("manas delete postId: ", postId);
+		 * const post = await this.postRepository.findOneBy({
+		 * 	id: postId,
+		 * });
+		 * const metaOptionId = post?.metaOptions?.id;
+		 * console.log({ metaOptionId });
+		 * if (post) await this.postRepository.delete(postId);
+		 * if (metaOptionId) await this.metaOptionRepository.delete(metaOptionId);
 		 */
-		console.log("manas delete postId: ", postId);
-		const post = await this.postRepository.findOneBy({
-			id: postId,
-		});
 
-		const metaOptionId = post?.metaOptions?.id;
-		console.log({ metaOptionId });
+		/**
+		 * Deleting by using two directional relationship.
+		 * if (metaOptionId) {
+		 * 	const inversePost = await this.metaOptionRepository.find({
+		 * 		where: {
+		 * 			id: metaOptionId,
+		 * 		},
+		 * 		relations:{
+		 * 			post: true
+		 * 		}
+		 * 	});
+		 * 	return { deleted: true, id: postId, inversePost };
+		 * }
+		 */
 
-		if (post) await this.postRepository.delete(postId);
-
-		if (metaOptionId) await this.metaOptionRepository.delete(metaOptionId);
+		await this.postRepository.delete(postId);
 
 		return { deleted: true, id: postId };
 	}
