@@ -1,8 +1,15 @@
 import { CreatePostMetaOptionsDto } from "src/meta-options/dtos/create-post-meta-options.dtos";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+	Column,
+	Entity,
+	ManyToOne,
+	OneToOne,
+	PrimaryGeneratedColumn,
+} from "typeorm";
 import { PostType } from "./enums/postType.enum";
 import { Status } from "./enums/postStatus.enums";
 import { MetaOption } from "src/meta-options/meta-option.entity";
+import { User } from "src/users/user.entity";
 
 @Entity()
 export class Post {
@@ -73,6 +80,12 @@ export class Post {
 		},
 	)
 	metaOptions?: MetaOption;
+
+	@ManyToOne(
+		() => User,
+		(user) => user.posts,
+	)
+	author: User;
 
 	// Will work in these later on
 	tags?: string[];

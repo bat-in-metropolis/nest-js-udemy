@@ -11,6 +11,6 @@ Content-Type: application/json
     "publishOn": "2026-01-25T09:17:41.000Z",
     // "tags": ["sample-tag", "sample-tag-2"],
     "metaOptions": {"metaValue": "{\"sidebarEnabled\": true, \"footerActive\": true}"},
-    "schema": "{\r\n\"@context\": \"https://schema.org\",\r\n\"@type\": \"BlogPosting\"\r\n}"
-
+    "schema": "{\r\n\"@context\": \"https://schema.org\",\r\n\"@type\": \"BlogPosting\"\r\n}",
+    "authorId": 1
 }

@@ -55,7 +55,7 @@ export class UsersController {
 		return this.usersService.findAll(limit, page);
 	}
 
-	@Get(":id")
+	@Get("/:id")
 	@ApiOperation({
 		summary: "Get user with specific id",
 	})

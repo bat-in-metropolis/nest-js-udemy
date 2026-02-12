@@ -1,4 +1,4 @@
-import { Body, Injectable } from "@nestjs/common";
+import { Body, Injectable, NotFoundException } from "@nestjs/common";
 import { UsersService } from "src/users/providers/users.service";
 import { CreatePostDto } from "../dtos/create-post.dto";
 import { Repository } from "typeorm";
@@ -65,6 +65,15 @@ export class PostsService {
       return await this.postRepository.save(post);
      */
 
+		// Find author from database based on authorId.
+		const author = await this.usersService.findOneById(createPostDto.authorId);
+
+		if (!author) {
+			throw new NotFoundException(
+				`User with Id ${createPostDto.authorId} not found!`,
+			);
+		}
+
 		/**
 		 * With use of Cascade -
 		 */
@@ -75,12 +84,13 @@ export class PostsService {
 		// Transform DTO to match entity structure
 		// Handle null metaOptions by converting to undefined or omitting it
 
-		const { metaOptions, ...postData } = createPostDto;
+		const { metaOptions, authorId, ...postData } = createPostDto;
 		const postDataForCreate = {
 			...postData,
 			...(metaOptions !== null
 				? { metaOptions: metaOptions as Partial<MetaOption> }
 				: null),
+			author,
 		};
 
 		const post = this.postRepository.create(postDataForCreate);
