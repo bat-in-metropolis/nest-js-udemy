@@ -84,6 +84,7 @@ export class Post {
 	@ManyToOne(
 		() => User,
 		(user) => user.posts,
+		{ eager: true },
 	)
 	author: User;
 
