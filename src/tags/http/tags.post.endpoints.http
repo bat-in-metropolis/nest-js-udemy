@@ -1,0 +1,8 @@
+POST http://localhost:8080/tags
+Content-Type: application/json
+
+{
+    "name": "javascript",
+    "description": "All tags related to JS",
+    "slug": "js-test-slug-002"
+}
