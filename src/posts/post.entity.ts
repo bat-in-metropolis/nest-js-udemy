@@ -2,6 +2,8 @@ import { CreatePostMetaOptionsDto } from "src/meta-options/dtos/create-post-meta
 import {
 	Column,
 	Entity,
+	JoinTable,
+	ManyToMany,
 	ManyToOne,
 	OneToOne,
 	PrimaryGeneratedColumn,
@@ -10,6 +12,7 @@ import { PostType } from "./enums/postType.enum";
 import { Status } from "./enums/postStatus.enums";
 import { MetaOption } from "src/meta-options/meta-option.entity";
 import { User } from "src/users/user.entity";
+import { Tag } from "src/tags/tag.entity";
 
 @Entity()
 export class Post {
@@ -88,6 +91,7 @@ export class Post {
 	)
 	author: User;
 
-	// Will work in these later on
-	tags?: string[];
+	@ManyToMany(() => Tag)
+	@JoinTable()
+	tags?: Tag[];
 }

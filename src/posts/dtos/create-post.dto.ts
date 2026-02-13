@@ -102,14 +102,13 @@ export class CreatePostDto {
 	publishOn: Date;
 
 	@ApiPropertyOptional({
-		example: ["tag1", "tag2"],
-		description: "Tags of the blog post",
+		example: [1, 2],
+		description: "Array of ids of tags",
 	})
 	@IsOptional()
 	@IsArray()
-	@IsString({ each: true })
-	@MinLength(3, { each: true })
-	tags?: string[];
+	@IsInt({ each: true })
+	tags?: number[];
 
 	@ApiPropertyOptional({
 		type: "object",

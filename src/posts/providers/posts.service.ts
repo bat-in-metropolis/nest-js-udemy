@@ -1,10 +1,18 @@
-import { Body, Injectable, NotFoundException } from "@nestjs/common";
+import {
+	Body,
+	forwardRef,
+	Inject,
+	Injectable,
+	NotFoundException,
+} from "@nestjs/common";
 import { UsersService } from "src/users/providers/users.service";
 import { CreatePostDto } from "../dtos/create-post.dto";
 import { Repository } from "typeorm";
 import { Post } from "../post.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { MetaOption } from "src/meta-options/meta-option.entity";
+import { TagsService } from "src/tags/providers/tags.service";
+import { Tag } from "src/tags/tag.entity";
 
 @Injectable()
 export class PostsService {
@@ -25,6 +33,12 @@ export class PostsService {
 		 */
 		@InjectRepository(MetaOption)
 		private readonly metaOptionRepository: Repository<MetaOption>,
+
+		/**
+		 *  Injecting TagService
+		 */
+		@Inject(forwardRef(() => TagsService))
+		private readonly tagsService: TagsService,
 	) {}
 
 	public async findAll() {
@@ -74,6 +88,12 @@ export class PostsService {
 			);
 		}
 
+		// Find Tags
+		let tagsList: Tag[] = [];
+		if (createPostDto.tags) {
+			tagsList = await this.tagsService.findMultipleTags(createPostDto.tags);
+		}
+
 		/**
 		 * With use of Cascade -
 		 */
@@ -84,13 +104,14 @@ export class PostsService {
 		// Transform DTO to match entity structure
 		// Handle null metaOptions by converting to undefined or omitting it
 
-		const { metaOptions, authorId, ...postData } = createPostDto;
+		const { metaOptions, authorId, tags, ...postData } = createPostDto;
 		const postDataForCreate = {
 			...postData,
 			...(metaOptions !== null
 				? { metaOptions: metaOptions as Partial<MetaOption> }
-				: null),
+				: {}),
 			author,
+			...(tagsList.length > 0 ? { tags: tagsList } : {}),
 		};
 
 		const post = this.postRepository.create(postDataForCreate);

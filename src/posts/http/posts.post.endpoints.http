@@ -5,11 +5,11 @@ Content-Type: application/json
 {
     "title": "Sample Post",
     "postType": "post",
-    "slug": "sample-post-00",
+    "slug": "sample-post-06",
     "status": "draft",
     "content": "This is a sample post content.",
     "publishOn": "2026-01-25T09:17:41.000Z",
-    // "tags": ["sample-tag", "sample-tag-2"],
+    "tags": [1,2],
     "metaOptions": {"metaValue": "{\"sidebarEnabled\": true, \"footerActive\": true}"},
     "schema": "{\r\n\"@context\": \"https://schema.org\",\r\n\"@type\": \"BlogPosting\"\r\n}",
     "authorId": 1
