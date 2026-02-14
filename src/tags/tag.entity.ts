@@ -52,6 +52,7 @@ export class Tag {
 	@ManyToMany(
 		() => Post,
 		(post) => post.tags,
+		{ onDelete: "CASCADE" },
 	)
 	posts: Post[];
 

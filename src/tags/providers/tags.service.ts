@@ -42,4 +42,14 @@ export class TagsService {
 		});
 		return results;
 	}
+
+	public async delete(id: number) {
+		console.log("manas delete: ", { id });
+		await this.tagRepository.delete(id);
+
+		return {
+			deleted: true,
+			id,
+		};
+	}
 }
