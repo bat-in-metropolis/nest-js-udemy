@@ -3,8 +3,8 @@ PATCH http://localhost:8080/posts
 content-type: application/json
 
 {
-    "id": 18,
+    "id": 20,
     "title": "Updated Title",
     "postType": "post",
-    "tags": [1,2]
+    "tags": [1,3]
 }

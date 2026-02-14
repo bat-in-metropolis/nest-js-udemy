@@ -24,7 +24,14 @@ export class TagsController {
 	 */
 	@Delete("/:id")
 	public async deleteTag(@Param() deleteTagByIdDto: DeleteTagByIdDto) {
-		console.log("manas deleteTag: ", { deleteTagByIdDto });
 		return await this.tagsService.delete(deleteTagByIdDto.id);
+	}
+
+	/**
+	 * Soft Delete Tag
+	 */
+	@Delete("soft-delete/:id")
+	public async softDeleteTag(@Param() deleteTagByIdDto: DeleteTagByIdDto) {
+		return await this.tagsService.softRemove(deleteTagByIdDto.id);
 	}
 }

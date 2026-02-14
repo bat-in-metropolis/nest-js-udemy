@@ -1,1 +1,3 @@
 DELETE http://localhost:8080/tags/2
+
+DELETE http://localhost:8080/tags/soft-delete/3
