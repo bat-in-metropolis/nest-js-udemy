@@ -59,7 +59,7 @@ export class PostsController {
 	})
 	@Patch()
 	public updatePost(@Body() updatePostDto: PatchPostDto) {
-		return updatePostDto;
+		return this.postsService.update(updatePostDto);
 	}
 
 	@Delete("/:postId")

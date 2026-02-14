@@ -13,6 +13,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { MetaOption } from "src/meta-options/meta-option.entity";
 import { TagsService } from "src/tags/providers/tags.service";
 import { Tag } from "src/tags/tag.entity";
+import { PatchPostDto } from "../dtos/patch-post.dtos";
 
 @Injectable()
 export class PostsService {
@@ -46,7 +47,9 @@ export class PostsService {
 		 * To fetch metaOptions as well from database.
 		 * const posts = this.postRepository.find({
 		 *    relations: {
-		 *      metaOptions: true
+		 *      metaOptions: true,
+		 * 		author: true,
+		 * 		tags: true
 		 *    }
 		 * });
 		 * Or in Post entity in metaOptions we can set "eager: true" as well.
@@ -59,7 +62,7 @@ export class PostsService {
 	/**
 	 * Creating new posts
 	 */
-	public async create(@Body() createPostDto: CreatePostDto) {
+	public async create(createPostDto: CreatePostDto) {
 		/**
       // Create metaOptions
       const metaOptions = createPostDto.metaOptions
@@ -119,6 +122,9 @@ export class PostsService {
 		return await this.postRepository.save(post);
 	}
 
+	/**
+	 * Deleting a post
+	 */
 	public async delete(postId: number) {
 		/**
 		 * Steps -
@@ -157,5 +163,48 @@ export class PostsService {
 		await this.postRepository.delete(postId);
 
 		return { deleted: true, id: postId };
+	}
+
+	/**
+	 * Updating a post
+	 */
+	public async update(updatePostDto: PatchPostDto) {
+		/**
+		 * Steps --
+		 * Find the Tags
+		 * Find the Post
+		 * Update the properties
+		 * Assign the new tags
+		 * Save and return the post
+		 */
+
+		// Find the Tags
+		const tags = updatePostDto?.tags
+			? await this.tagsService.findMultipleTags(updatePostDto.tags)
+			: null;
+
+		// Find the Post
+		const post = await this.postRepository.find({
+			where: {
+				id: updatePostDto.id,
+			},
+		});
+
+		// Update the properties
+		post[0].title = updatePostDto.title ?? post[0].title;
+		post[0].postType = updatePostDto.postType ?? post[0].postType;
+		post[0].slug = updatePostDto.slug ?? post[0].slug;
+		post[0].status = updatePostDto.status ?? post[0].status;
+		post[0].content = updatePostDto.content ?? post[0].content;
+		post[0].schema = updatePostDto.schema ?? post[0].schema;
+		post[0].featuredImageUrl =
+			updatePostDto.featuredImageUrl ?? post[0].featuredImageUrl;
+		post[0].publishOn = updatePostDto.publishOn ?? post[0].publishOn;
+
+		// Assign the new tags
+		post[0].tags = tags ? tags : post[0].tags;
+
+		// Save and return the post
+		return await this.postRepository.save(post);
 	}
 }

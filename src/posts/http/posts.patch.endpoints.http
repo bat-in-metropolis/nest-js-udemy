@@ -1,9 +1,10 @@
 ## Update Post
-PATCH http://localhost:3000/posts
+PATCH http://localhost:8080/posts
 content-type: application/json
 
 {
-    "id": 1,
+    "id": 18,
     "title": "Updated Title",
-    "postType": "post"
+    "postType": "post",
+    "tags": [1,2]
 }
