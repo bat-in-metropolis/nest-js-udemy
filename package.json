@@ -8,7 +8,7 @@
 	"scripts": {
 		"build": "nest build",
 		"start": "nest start",
-		"start:dev": "nest start --watch",
+		"start:dev": "NODE_ENV=dev nest start --watch",
 		"start:debug": "nest start --debug --watch",
 		"start:prod": "node dist/main",
 		"test": "jest",
@@ -62,7 +62,10 @@
 			"json",
 			"ts"
 		],
-		"rootDir": "src",
+		"rootDir": "./",
+		"modulePaths":[
+			"<rootDir>"
+		],
 		"testRegex": ".*\\.spec\\.ts$",
 		"transform": {
 			"^.+\\.(t|j)s$": "ts-jest"
