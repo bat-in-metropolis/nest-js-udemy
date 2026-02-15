@@ -9,7 +9,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { User } from "./users/user.entity";
 import { TagsModule } from "./tags/tags.module";
 import { MetaOptionsModule } from "./meta-options/meta-options.module";
-import { appConfig } from "./config/app.config";
+import appConfig from "./config/app.config";
+import databaseConfig from "./config/database.config";
 
 const ENV = process.env.NODE_ENV;
 @Module({
@@ -18,7 +19,7 @@ const ENV = process.env.NODE_ENV;
 			isGlobal: true,
 			// envFilePath: [".env.dev"],
 			envFilePath: !ENV ? ".env" : `.env.${ENV}`,
-			load: [appConfig],
+			load: [appConfig, databaseConfig],
 		}),
 		UsersModule,
 		PostsModule,
