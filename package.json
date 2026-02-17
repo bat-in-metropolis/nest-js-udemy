@@ -32,6 +32,7 @@
 		"@nestjs/typeorm": "10.0.2",
 		"class-transformer": "^0.5.1",
 		"class-validator": "0.14.1",
+		"joi": "17.12.2",
 		"pg": "8.11.5",
 		"reflect-metadata": "^0.2.2",
 		"rxjs": "^7.8.1",
@@ -63,7 +64,7 @@
 			"ts"
 		],
 		"rootDir": "./",
-		"modulePaths":[
+		"modulePaths": [
 			"<rootDir>"
 		],
 		"testRegex": ".*\\.spec\\.ts$",

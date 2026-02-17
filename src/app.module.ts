@@ -11,6 +11,7 @@ import { TagsModule } from "./tags/tags.module";
 import { MetaOptionsModule } from "./meta-options/meta-options.module";
 import appConfig from "./config/app.config";
 import databaseConfig from "./config/database.config";
+import environmentValidation from "./config/environment.validation";
 
 const ENV = process.env.NODE_ENV;
 @Module({
@@ -20,6 +21,7 @@ const ENV = process.env.NODE_ENV;
 			// envFilePath: [".env.dev"],
 			envFilePath: !ENV ? ".env" : `.env.${ENV}`,
 			load: [appConfig, databaseConfig],
+			validationSchema: environmentValidation,
 		}),
 		UsersModule,
 		PostsModule,
