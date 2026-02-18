@@ -1,0 +1,20 @@
+/**
+ * Centralized error messages used across the application
+ */
+export const ERROR_MESSAGES = {
+  /**
+   * Database related error messages
+   */
+  DATABASE: {
+    CONNECTION_TIMEOUT:
+      "Unable to process your request at the moment, please try later.",
+    CONNECTION_TIMEOUT_DESCRIPTION: "Error connecting to the database",
+  },
+  /**
+   * User related error messages
+   */
+  USER: {
+    ALREADY_EXISTS: "The user already exists, please check your email",
+    NOT_FOUND: "User not found",
+  },
+} as const;

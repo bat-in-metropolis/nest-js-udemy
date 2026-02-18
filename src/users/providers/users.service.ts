@@ -1,5 +1,12 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import {
+	BadRequestException,
+	forwardRef,
+	Inject,
+	Injectable,
+	RequestTimeoutException,
+} from "@nestjs/common";
 import { AuthService } from "src/auth/providers/auth.service";
+import { ERROR_MESSAGES } from "src/common/constants/error-messages.constants";
 import { Repository } from "typeorm";
 import { User } from "../user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -65,7 +72,7 @@ export class UsersService {
 	 * @param id The user ID
 	 * @returns The user
 	 */
-	public async findOneById(id: number) {
+	public async findOneById(id: number): Promise<User | null> {
 		return await this.userRepository.findOneBy({ id });
 	}
 
@@ -74,22 +81,35 @@ export class UsersService {
 	 * @param createUserDto The user data to create
 	 * @returns The created user
 	 */
-	public async createUser(createUserDto: CreateUserDto) {
+	public async createUser(createUserDto: CreateUserDto): Promise<User> {
 		/**
 		 * 1. Check if user already exists
 		 * 2. if yes - Handle exception
 		 * 3. if no - Create user
 		 */
-		// Check if user already exists
-		const existingUser = await this.userRepository.findOne({
-			where: {
-				email: createUserDto.email,
-			},
-		});
+
+		let existingUser: User | null = null;
+		try {
+			// Check if user already exists
+			existingUser = await this.userRepository.findOne({
+				where: {
+					email: createUserDto.email,
+				},
+			});
+} catch (error: unknown) {
+      /**
+       * Might save the details of the exception.
+       * Because we will prefer not to send sensitive details to the user.
+       */
+      throw new RequestTimeoutException(
+        ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
+        { description: ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT_DESCRIPTION },
+			);
+		}
 
 		// if yes - Handle exception
 		if (existingUser) {
-			throw new Error("User already exists");
+			throw new BadRequestException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
 		}
 
 		// if no - Create user
