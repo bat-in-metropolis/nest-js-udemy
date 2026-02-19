@@ -99,41 +99,64 @@ export class UsersService {
 		 * 3. if no - Create user
 		 */
 
-		let existingUser: User | null = null;
+		/**
+			let existingUser: User | null = null;
+			try {
+				// Check if user already exists
+				existingUser = await this.userRepository.findOne({
+					where: {
+						email: createUserDto.email,
+					},
+				});
+			} catch (error: unknown) {
+				// Might save the details of the exception.
+				// Because we will prefer not to send sensitive details to the user.
+				throw new RequestTimeoutException(
+					ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
+					{ description: ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT_DESCRIPTION },
+				);
+			}
+
+			// if yes - Handle exception
+			if (existingUser) {
+				throw new BadRequestException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
+			}
+
+			// if no - Create user
+			let user = this.userRepository.create(createUserDto);
+
+			try {
+				user = await this.userRepository.save(user);
+			} catch (error) {
+				throw new RequestTimeoutException(
+					ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
+					{ description: ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT_DESCRIPTION },
+				);
+			}
+			return user;
+		 */
+
+		/**
+		 * A more clean way.
+		 * Has more DB error reliance.
+		 *
+		 * Things to introduce later on -
+		 * 1. Return DTO instead of entity
+		 * 2. Logging
+		 */
+		const user = this.userRepository.create(createUserDto);
+
 		try {
-			// Check if user already exists
-			existingUser = await this.userRepository.findOne({
-				where: {
-					email: createUserDto.email,
-				},
-			});
-		} catch (error: unknown) {
-			/**
-			 * Might save the details of the exception.
-			 * Because we will prefer not to send sensitive details to the user.
-			 */
+			return await this.userRepository.save(user);
+		} catch (error: any) {
+			// Postgres unique violation
+			if (error.code === "23505") {
+				throw new BadRequestException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
+			}
+
 			throw new RequestTimeoutException(
 				ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
-				{ description: ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT_DESCRIPTION },
 			);
 		}
-
-		// if yes - Handle exception
-		if (existingUser) {
-			throw new BadRequestException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
-		}
-
-		// if no - Create user
-		let user = this.userRepository.create(createUserDto);
-
-		try {
-			user = await this.userRepository.save(user);
-		} catch (error) {
-			throw new RequestTimeoutException(
-				ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
-				{ description: ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT_DESCRIPTION },
-			);
-		}
-		return user;
 	}
 }
