@@ -73,7 +73,24 @@ export class UsersService {
 	 * @returns The user
 	 */
 	public async findOneById(id: number): Promise<User | null> {
-		return await this.userRepository.findOneBy({ id });
+		let user: User | null = null;
+		try {
+			user = await this.userRepository.findOneBy({ id });
+		} catch (error) {
+			throw new RequestTimeoutException(
+				ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
+				{ description: ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT_DESCRIPTION },
+			);
+		}
+
+		/**
+		 * User doesn't exist exception.
+		 */
+		if (!user) {
+			throw new BadRequestException(ERROR_MESSAGES.USER.USER_DOES_NOT_EXIST);
+		}
+
+		return user;
 	}
 
 	/**
@@ -96,14 +113,14 @@ export class UsersService {
 					email: createUserDto.email,
 				},
 			});
-} catch (error: unknown) {
-      /**
-       * Might save the details of the exception.
-       * Because we will prefer not to send sensitive details to the user.
-       */
-      throw new RequestTimeoutException(
-        ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
-        { description: ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT_DESCRIPTION },
+		} catch (error: unknown) {
+			/**
+			 * Might save the details of the exception.
+			 * Because we will prefer not to send sensitive details to the user.
+			 */
+			throw new RequestTimeoutException(
+				ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
+				{ description: ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT_DESCRIPTION },
 			);
 		}
 
@@ -113,7 +130,16 @@ export class UsersService {
 		}
 
 		// if no - Create user
-		const user = this.userRepository.create(createUserDto);
-		return await this.userRepository.save(user);
+		let user = this.userRepository.create(createUserDto);
+
+		try {
+			user = await this.userRepository.save(user);
+		} catch (error) {
+			throw new RequestTimeoutException(
+				ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
+				{ description: ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT_DESCRIPTION },
+			);
+		}
+		return user;
 	}
 }
