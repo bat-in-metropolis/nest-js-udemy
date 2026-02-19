@@ -1,6 +1,8 @@
 import {
 	BadRequestException,
 	forwardRef,
+	HttpException,
+	HttpStatus,
 	Inject,
 	Injectable,
 	RequestTimeoutException,
@@ -44,27 +46,19 @@ export class UsersService {
 	 * @returns The users and pagination information
 	 */
 	public findAll(limit: number, page: number) {
-		const isAuthenticated = this.authService.isAuth();
-		const port = this.configService.get("PORT");
-		console.log({ isAuthenticated, port });
-		return {
-			users: [
-				{
-					firstName: "John",
-					lastName: "Doe",
-					email: "john.doe@example.com",
-				},
-				{
-					firstName: "Alice",
-					lastName: "Watson",
-					email: "alice.watson@example.com",
-				},
-			],
-			pagination: {
-				limit,
-				page,
+		throw new HttpException(
+			{
+				status: HttpStatus.MOVED_PERMANENTLY,
+				error: "The API endpoint does not exist",
+				fileName: "user.service.ts",
+				lineNumber: 54,
 			},
-		};
+			HttpStatus.MOVED_PERMANENTLY,
+			{
+				description: "Occurred because the API endpoint was permanently moved",
+				cause: new Error(),
+			},
+		);
 	}
 
 	/**
