@@ -1,13 +1,16 @@
 import {
+	BadRequestException,
 	Body,
+	ConflictException,
 	forwardRef,
 	Inject,
 	Injectable,
 	NotFoundException,
+	RequestTimeoutException,
 } from "@nestjs/common";
 import { UsersService } from "src/users/providers/users.service";
 import { CreatePostDto } from "../dtos/create-post.dto";
-import { Repository } from "typeorm";
+import { QueryFailedError, Repository } from "typeorm";
 import { Post } from "../post.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { MetaOption } from "src/meta-options/meta-option.entity";
@@ -169,42 +172,68 @@ export class PostsService {
 	 * Updating a post
 	 */
 	public async update(updatePostDto: PatchPostDto) {
-		/**
-		 * Steps --
-		 * Find the Tags
-		 * Find the Post
-		 * Update the properties
-		 * Assign the new tags
-		 * Save and return the post
-		 */
-
-		// Find the Tags
-		const tags = updatePostDto?.tags
-			? await this.tagsService.findMultipleTags(updatePostDto.tags)
-			: null;
-
-		// Find the Post
-		const post = await this.postRepository.find({
-			where: {
-				id: updatePostDto.id,
-			},
+		// 1️⃣ Find Post
+		const post = await this.postRepository.findOne({
+			where: { id: updatePostDto.id },
+			relations: ["tags"],
 		});
 
-		// Update the properties
-		post[0].title = updatePostDto.title ?? post[0].title;
-		post[0].postType = updatePostDto.postType ?? post[0].postType;
-		post[0].slug = updatePostDto.slug ?? post[0].slug;
-		post[0].status = updatePostDto.status ?? post[0].status;
-		post[0].content = updatePostDto.content ?? post[0].content;
-		post[0].schema = updatePostDto.schema ?? post[0].schema;
-		post[0].featuredImageUrl =
-			updatePostDto.featuredImageUrl ?? post[0].featuredImageUrl;
-		post[0].publishOn = updatePostDto.publishOn ?? post[0].publishOn;
+		if (!post) {
+			throw new NotFoundException(
+				`Post with id ${updatePostDto.id} not found.`,
+			);
+		}
 
-		// Assign the new tags
-		post[0].tags = tags ? tags : post[0].tags;
+		// 2️⃣ Validate & Fetch Tags
+		if (updatePostDto?.tags) {
+			const tags = await this.tagsService.findMultipleTags(updatePostDto.tags);
 
-		// Save and return the post
-		return await this.postRepository.save(post);
+			console.log("manas update : ", { tags, uPDT: updatePostDto.tags });
+
+			if (!tags || tags.length !== updatePostDto.tags.length) {
+				throw new NotFoundException(
+					"One or more provided tag IDs do not exist.",
+				);
+			}
+
+			post.tags = tags;
+		}
+
+		// 3️⃣ Update Only Defined Fields
+		if (updatePostDto.title !== undefined) post.title = updatePostDto.title;
+
+		if (updatePostDto.postType !== undefined)
+			post.postType = updatePostDto.postType;
+
+		if (updatePostDto.slug !== undefined) post.slug = updatePostDto.slug;
+
+		if (updatePostDto.status !== undefined) post.status = updatePostDto.status;
+
+		if (updatePostDto.content !== undefined)
+			post.content = updatePostDto.content;
+
+		if (updatePostDto.schema !== undefined) post.schema = updatePostDto.schema;
+
+		if (updatePostDto.featuredImageUrl !== undefined)
+			post.featuredImageUrl = updatePostDto.featuredImageUrl;
+
+		if (updatePostDto.publishOn !== undefined)
+			post.publishOn = updatePostDto.publishOn;
+
+		// 4️⃣ Save & Handle Unique Constraint
+		try {
+			return await this.postRepository.save(post);
+		} catch (error) {
+			if (error instanceof QueryFailedError) {
+				const dbError = error as any;
+
+				// Postgres unique violation
+				if (dbError.code === "23505") {
+					throw new ConflictException("A post with this slug already exists");
+				}
+			}
+
+			throw error;
+		}
 	}
 }
