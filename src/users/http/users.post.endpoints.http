@@ -8,3 +8,30 @@ Content-Type: application/json
     "email": "john.doe@example.com",
     "password": "Password123!"
 }
+
+# Create many users
+POST http://localhost:8080/users/create-many
+Content-Type: application/json
+
+{
+    "users": [
+        {
+            "firstName": "John3",
+            "lastName": "Doe",
+            "email": "john3.doe@example.com",
+            "password": "Password123!"
+        },
+        {
+            "firstName": "John4",
+            "lastName": "Doe",
+            "email": "john4.doe@example.com",
+            "password": "Password123!"
+        },
+        {
+            "firstName": "John4",
+            "lastName": "Doe",
+            "email": "john5.doe@example.com",
+            "password": "Password123!"
+        }
+    ]
+}
