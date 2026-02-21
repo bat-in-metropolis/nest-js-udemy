@@ -9,7 +9,7 @@ import {
 } from "@nestjs/common";
 import { AuthService } from "src/auth/providers/auth.service";
 import { ERROR_MESSAGES } from "src/common/constants/error-messages.constants";
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { User } from "../user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CreateUserDto } from "../dtos/create-user.dto";
@@ -37,6 +37,11 @@ export class UsersService {
 		 * Injecting ConfigService
 		 */
 		private readonly configService: ConfigService,
+
+		/**
+		 * Inject Datasource
+		 */
+		private readonly dataSource: DataSource,
 	) {}
 
 	/**
@@ -157,6 +162,44 @@ export class UsersService {
 			throw new RequestTimeoutException(
 				ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
 			);
+		}
+	}
+
+	public async createManyUser(createUserDtos: CreateUserDto[]) {
+		/**
+		 * Steps
+		 * 1. Create Query Runner Instance
+		 * 2. Connect Query Runner to Database
+		 * 3. Start Transaction
+		 * 4. If successful - commit
+		 * 5. If unsuccessful - rollback
+		 * 6. Release connection
+		 */
+
+		const newUsers: User[] = [];
+		// Create Query Runner Instance
+		const queryRunner = this.dataSource.createQueryRunner();
+
+		// Connect Query Runner to Database
+		await queryRunner.connect();
+
+		// Start Transaction
+		await queryRunner.startTransaction();
+
+		try {
+			for (const user of createUserDtos) {
+				const newUser = queryRunner.manager.create(User, user);
+				const result = await queryRunner.manager.save(newUser);
+				newUsers.push(result);
+			}
+			//If successful - commit
+			await queryRunner.commitTransaction();
+		} catch (error: unknown) {
+			// If unsuccessful - rollback
+			await queryRunner.rollbackTransaction();
+		} finally {
+			// Release connection
+			await queryRunner.release();
 		}
 	}
 }
