@@ -16,6 +16,7 @@ import { CreateUserDto } from "../dtos/create-user.dto";
 import { ConfigService } from "@nestjs/config";
 import { UsersCreateManyProvider } from "./users-create-many.provider";
 import { CreateManyUsersDto } from "../dtos/create-many-users.dto";
+import { CreateUserProvider } from "./create-user.provider";
 
 /**
  * Class to connect to Users table and perform buisness operations
@@ -44,6 +45,11 @@ export class UsersService {
 		 * Inject usersCreateManyProvider
 		 */
 		private readonly usersCreateManyProvider: UsersCreateManyProvider,
+
+		/**
+		 * Inject createUserProvider
+		 */
+		private readonly createUserProvider: CreateUserProvider,
 	) {}
 
 	/**
@@ -94,77 +100,8 @@ export class UsersService {
 		return user;
 	}
 
-	/**
-	 * The method to create a new user
-	 * @param createUserDto The user data to create
-	 * @returns The created user
-	 */
 	public async createUser(createUserDto: CreateUserDto): Promise<User> {
-		/**
-		 * 1. Check if user already exists
-		 * 2. if yes - Handle exception
-		 * 3. if no - Create user
-		 */
-
-		/**
-			let existingUser: User | null = null;
-			try {
-				// Check if user already exists
-				existingUser = await this.userRepository.findOne({
-					where: {
-						email: createUserDto.email,
-					},
-				});
-			} catch (error: unknown) {
-				// Might save the details of the exception.
-				// Because we will prefer not to send sensitive details to the user.
-				throw new RequestTimeoutException(
-					ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
-					{ description: ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT_DESCRIPTION },
-				);
-			}
-
-			// if yes - Handle exception
-			if (existingUser) {
-				throw new BadRequestException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
-			}
-
-			// if no - Create user
-			let user = this.userRepository.create(createUserDto);
-
-			try {
-				user = await this.userRepository.save(user);
-			} catch (error) {
-				throw new RequestTimeoutException(
-					ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
-					{ description: ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT_DESCRIPTION },
-				);
-			}
-			return user;
-		 */
-
-		/**
-		 * A more clean way.
-		 * Has more DB error reliance.
-		 *
-		 * Things to introduce later on -
-		 * 1. Return DTO instead of entity
-		 * 2. Logging
-		 */
-		const user = this.userRepository.create(createUserDto);
-
-		try {
-			return await this.userRepository.save(user);
-		} catch (error: any) {
-			// Postgres unique violation
-			if (error.code === "23505") {
-				throw new BadRequestException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
-			}
-
-			throw new RequestTimeoutException(
-				ERROR_MESSAGES.DATABASE.CONNECTION_TIMEOUT,
-			);
-		}
+		return await this.createUserProvider.createUser(createUserDto);
 	}
 
 	public async createManyUsers(createManyUsersDto: CreateManyUsersDto) {
