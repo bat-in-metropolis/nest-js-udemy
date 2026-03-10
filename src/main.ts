@@ -16,6 +16,9 @@ async function bootstrap() {
 			whitelist: true,
 			forbidNonWhitelisted: true,
 			transform: true,
+			// transformOptions:{
+			// 	enableImplicitConversion: true, // allows auto-conversion of primitive types
+			// }
 		}),
 	);
 

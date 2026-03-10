@@ -17,6 +17,7 @@ import { MetaOption } from "src/meta-options/meta-option.entity";
 import { TagsService } from "src/tags/providers/tags.service";
 import { Tag } from "src/tags/tag.entity";
 import { PatchPostDto } from "../dtos/patch-post.dtos";
+import { GetPostDto } from "../dtos/get-posts.dto";
 
 @Injectable()
 export class PostsService {
@@ -45,7 +46,7 @@ export class PostsService {
 		private readonly tagsService: TagsService,
 	) {}
 
-	public async findAll() {
+	public findAll(query: GetPostDto) {
 		/**
 		 * To fetch metaOptions as well from database.
 		 * const posts = this.postRepository.find({
@@ -57,9 +58,20 @@ export class PostsService {
 		 * });
 		 * Or in Post entity in metaOptions we can set "eager: true" as well.
 		 */
-		const posts = this.postRepository.find();
+		const posts = this.postRepository.find({
+			skip:
+				query.page && query.limit ? (query.page - 1) * query.limit : undefined,
+			take: query.limit,
+		});
 
 		return posts;
+	}
+
+	public findOneById(postId: number) {
+		return this.postRepository.findOne({
+			where: { id: postId },
+			//   relations: ["metaOptions", "author", "tags"],
+		});
 	}
 
 	/**

@@ -1,2 +1,16 @@
 ## Get all posts
+
+{{
+    // Pre request Script
+    const date = new Date();
+    exports.startDate = date.toISOString();
+    exports.endDate = new Date(date.getTime() + 5 * 60 * 1000).toISOString(); // 5 minutes later
+}}
+
 GET http://localhost:8080/posts
+    ?startDate={{startDate}}
+    &endDate={{endDate}}
+    &limit=2
+    &page=2
+
+GET http://localhost:8080/posts/19
