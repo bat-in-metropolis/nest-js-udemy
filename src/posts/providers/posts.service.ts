@@ -18,6 +18,8 @@ import { TagsService } from "src/tags/providers/tags.service";
 import { Tag } from "src/tags/tag.entity";
 import { PatchPostDto } from "../dtos/patch-post.dtos";
 import { GetPostDto } from "../dtos/get-posts.dto";
+import { PaginationProvider } from "src/common/pagination/provider/pagination.provider";
+import { Paginated } from "src/common/pagination/interface/paginated.interface";
 
 @Injectable()
 export class PostsService {
@@ -44,9 +46,15 @@ export class PostsService {
 		 */
 		@Inject(forwardRef(() => TagsService))
 		private readonly tagsService: TagsService,
+
+		/**
+		 * Injecting PaginationProvider
+		 */
+		@Inject(PaginationProvider)
+		private readonly paginationProvider: PaginationProvider,
 	) {}
 
-	public findAll(query: GetPostDto) {
+	public async findAll(query: GetPostDto): Promise<Paginated<Post>> {
 		/**
 		 * To fetch metaOptions as well from database.
 		 * const posts = this.postRepository.find({
@@ -58,11 +66,13 @@ export class PostsService {
 		 * });
 		 * Or in Post entity in metaOptions we can set "eager: true" as well.
 		 */
-		const posts = this.postRepository.find({
-			skip:
-				query.page && query.limit ? (query.page - 1) * query.limit : undefined,
-			take: query.limit,
-		});
+		const posts = await this.paginationProvider.paginateQuery(
+			{
+				limit: query.limit,
+				page: query.page,
+			},
+			this.postRepository,
+		);
 
 		return posts;
 	}
