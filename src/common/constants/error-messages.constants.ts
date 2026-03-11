@@ -18,4 +18,14 @@ export const ERROR_MESSAGES = {
 		NOT_FOUND: "User not found",
 		USER_DOES_NOT_EXIST: "The user id does not exist",
 	},
+	/**
+	 * Authentication related error messages
+	 */
+	AUTH: {
+		INVALID_CREDENTIALS:
+			"Invalid credentials. Please check your email and password.",
+		SIGN_IN_TIMEOUT:
+			"Unable to process sign in request at the moment. Please try again later.",
+		SIGN_IN_TIMEOUT_DESCRIPTION: "Error occurred during sign in process",
+	},
 } as const;

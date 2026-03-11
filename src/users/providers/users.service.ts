@@ -17,6 +17,7 @@ import { ConfigService } from "@nestjs/config";
 import { UsersCreateManyProvider } from "./users-create-many.provider";
 import { CreateManyUsersDto } from "../dtos/create-many-users.dto";
 import { CreateUserProvider } from "./create-user.provider";
+import { FindOneUserByEmailProvider } from "./find-one-user-by-email.provider";
 
 /**
  * Class to connect to Users table and perform buisness operations
@@ -50,6 +51,11 @@ export class UsersService {
 		 * Inject createUserProvider
 		 */
 		private readonly createUserProvider: CreateUserProvider,
+
+		/**
+		 * Injecting findOneUserByEmailProvider
+		 */
+		private readonly findOneUserByEmailProvider: FindOneUserByEmailProvider,
 	) {}
 
 	/**
@@ -108,5 +114,9 @@ export class UsersService {
 		return await this.usersCreateManyProvider.createManyUsers(
 			createManyUsersDto,
 		);
+	}
+
+	public async findOneByEmail(email: string): Promise<User | null> {
+		return await this.findOneUserByEmailProvider.findOneByEmail(email);
 	}
 }
